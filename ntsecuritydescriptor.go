@@ -3,6 +3,7 @@ package winacl
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"golang.org/x/sys/windows"
 )
 
@@ -26,6 +27,10 @@ type NtSecurityDescriptorHeader struct {
 	OffsetDacl  uint32
 }
 
+func (s NtSecurityDescriptor) String() string {
+	return fmt.Sprintf("Parsed Security Descriptor:\n Offsets:\n Owner=%v Group=%v Sacl=%v Dacl=%v\n", s.Header.OffsetOwner, s.Header.OffsetGroup, s.Header.OffsetDacl, s.Header.OffsetSacl)
+}
+
 type ACL struct {
 	Header ACLHeader
 }
@@ -38,11 +43,13 @@ type ACLHeader struct {
 	Sbz2     uint16
 }
 
-func ParseNtSecurityDescriptor(ntSecurityDescriptorBytes RawSecurityDescriptor) {
+func ParseNtSecurityDescriptor(ntSecurityDescriptorBytes RawSecurityDescriptor) (NtSecurityDescriptor, error) {
 	buf := bytes.NewBuffer(ntSecurityDescriptorBytes)
 	ntsd := NtSecurityDescriptor{}
 	ntsd.Header = ReadNTSDHeader(buf)
 	ntsd.DACL = ReadACL(buf)
+
+	return ntsd, nil
 }
 
 func ReadNTSDHeader(buf *bytes.Buffer) NtSecurityDescriptorHeader {
