@@ -1,4 +1,4 @@
-module go-winacl
+module github.com/rvazarkar/go-winacl
 
 go 1.16
 
