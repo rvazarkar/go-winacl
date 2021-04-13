@@ -1,4 +1,4 @@
-package go_winacl
+package winacl
 
 import (
 	"bytes"
